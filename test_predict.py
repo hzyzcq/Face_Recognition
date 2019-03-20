@@ -32,12 +32,16 @@ tf.reset_default_graph()
 import cv2
 import sys
 import gc
+
+#Restore model and graph from save path
 saver = tf.train.import_meta_graph("models/my_face_model.ckpt.meta")
 
 with tf.Session() as sess:
 	
 	saver.restore(sess, 'models/my_face_model.ckpt')
 	graph = tf.get_default_graph()
+	#Get tensor for input as well as outputs in the form of probability for each class to mark image 
+	#with the most probable class
 	X = graph.get_tensor_by_name('inputs/X:0')
 	y_proba = graph.get_tensor_by_name('output/y_proba:0')
 
@@ -56,7 +60,7 @@ with tf.Session() as sess:
 		faceRects = classifier.detectMultiScale(grey, scaleFactor = 1.2, minNeighbors = 3, minSize = (32, 32))
 
 		if len(faceRects) > 0:
-			for faceRect in faceRects:  #单独框出每一张人脸
+			for faceRect in faceRects:  #Frame each face recognized
 				x, y, w, h = faceRect        
 				image = frame[y - 10: y + h + 10, x - 10: x + w + 10]
 	
