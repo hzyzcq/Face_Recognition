@@ -10,6 +10,7 @@ from skimage.transform import resize, rotate
 from random import randint
 import numpy as np
 
+#Randomly rotate and amplify image, then resize it to target size
 def prepare_image(image, target_width = 300, target_height = 300):
 
 	angle = randint(-30, 30) 
@@ -23,7 +24,7 @@ def prepare_image(image, target_width = 300, target_height = 300):
 
 
 
-
+#Load path of jpg file
 faces_path = os.path.join('datasets', 'faces').replace('\\', '/')
 face_classes = sorted([dirname for dirname in os.listdir(faces_path)])
 
@@ -36,7 +37,7 @@ for face_class in face_classes:
 			image_paths[face_class].append(os.path.join(image_dir, filepath).replace('\\', '/'))
 
 
-
+#Match class with id number to allow softmax
 face_class_ids = {face_class: index for index, face_class in enumerate(face_classes)}
 
 face_paths_and_classes = []
@@ -44,6 +45,7 @@ for face_class, paths in image_paths.items():
 	for path in paths:
 		face_paths_and_classes.append((path, face_class_ids[face_class]))
 
+#Generate train set and test set
 test_ratio = .2
 train_size = int(len(face_paths_and_classes) * (1 - test_ratio))
 
@@ -52,7 +54,7 @@ np.random.shuffle(face_paths_and_classes)
 train_set = face_paths_and_classes[:train_size]
 test_set = face_paths_and_classes[train_size:]
 
-
+#Structure of CNN
 height = 300
 width = 300
 channels = 3
@@ -76,6 +78,7 @@ fc1_dropout_rate = .5
 
 n_outputs = len(face_classes)
 
+#Building model
 tf.reset_default_graph()
 
 with tf.name_scope('inputs'):
@@ -124,7 +127,7 @@ with tf.name_scope('init_and_save'):
 
 
 
-#批处理
+#Generate batches in case of memory overflow
 from random import sample
 
 def random_batch(paths, batch_size):
@@ -136,6 +139,7 @@ def random_batch(paths, batch_size):
 	return X_batch, y_batch
 
 
+#Training
 n_epochs = 20
 batch_size = 10
 n_iterations_per_epoch = len(train_set) // batch_size
