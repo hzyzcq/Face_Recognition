@@ -2,6 +2,7 @@ import cv2
 import sys
 from PIL import Image
 
+#Extract face image from frames of a video or cam
 def CatchPic(window_name, camera_idx_or_file_path, catch_pic_num = 100, path_name ='dataset/faces', init = 0):
 	cv2.namedWindow(window_name)
 
